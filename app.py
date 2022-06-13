@@ -19,7 +19,12 @@ def get_movies_by_years(year1, year2):
 
 @app.route('/rating/<category>')
 def get_movies_by_rating(category):
-    movies_by_rating(category)
+    return jsonify(movies_by_rating(category))
+
+
+@app.route('/genre/<genre>')
+def get_movies_by_genre(genre):
+    return jsonify(movies_by_genre(genre))
 
 
 if __name__ == "__main__":

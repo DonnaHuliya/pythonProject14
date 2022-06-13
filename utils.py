@@ -1,4 +1,5 @@
 import sqlite3
+from collections import Counter
 
 
 class DbConnect:
@@ -63,4 +64,49 @@ def movies_by_rating(rating):
         result_list.append({"title": movie[0],
                             "rating": movie[1],
                             "description": movie[2]})
-        return result_list
+    return result_list
+
+
+def movies_by_genre(genre):
+    result = execute_query(f"""select title, description 
+    from netflix 
+    where listed_in like '%{genre}%'
+    order by release_year desc
+    limit 10;""")
+    result_list = []
+    for movie in result:
+        result_list.append({
+            "title": movie[0],
+            "description": movie[1]
+        })
+    return result_list
+
+
+def cast_partners(actor1, actor2):
+    query = f"select `cast` from netflix where `cast` like '%{actor1}%' and `cast` like '%{actor2}%';"
+    result = execute_query(query)
+    actors_list = []
+    for cast in result:
+        actors_list.extend(cast[0].split(', '))
+    counter = Counter(actors_list)
+    print(counter)
+    result_list = []
+    for actor, count in counter.items():
+        if actor not in [actor1, actor2] and count > 2:
+            result_list.append(actor)
+    return result_list
+
+
+def search_movie_by_param(movie_type, release_year, genre):
+    query = f"""select title, description 
+    from netflix 
+    where type = '{movie_type}' 
+    and release_year = {release_year} 
+    and listed_in like '%{genre}%'"""
+    result = execute_query(query)
+    result_list = []
+    for movie in result:
+        result_list.append({"title": movie[0],
+                            "description": movie[1]})
+    return result_list
+
